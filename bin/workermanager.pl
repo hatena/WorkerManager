@@ -14,6 +14,11 @@ use Data::Dumper qw(Dumper);
 
 use FindBin;
 use lib File::Spec->catdir($FindBin::Bin, '..', 'lib');
+use lib File::Spec->catdir($FindBin::Bin, '..','modules','DBIx-MoCo','lib');
+use lib File::Spec->catdir($FindBin::Bin, '..','modules','Ridge','lib');
+use lib File::Spec->catdir($FindBin::Bin, '..','modules','Hatena','lib');
+use lib File::Spec->catdir($FindBin::Bin, '..','modules','Hatena-Star-Mobile','lib');
+use lib File::Spec->catdir($FindBin::Bin, '..','modules','WorkerManager','lib');
 use WorkerManager;
 
 sub usage {
