@@ -9,14 +9,14 @@
 # source function library
 . /etc/rc.d/init.d/functions
 
-if [ -f /etc/sysconfig/gearmanworkermanager ]; then
-        . /etc/sysconfig/gearmanworkermanager
+if [ -f /etc/sysconfig/workermanager ]; then
+        . /etc/sysconfig/workermanager
 fi
 
 # Define name of Program
 ROOT=/usr/bin
-prog=gearmanworkermanager.pl
-pidfile=${PIDFILE-/var/run/gearmanworkermanager.pid}
+prog=${PROG-workermanager.pl}
+pidfile=${PIDFILE-/var/run/workermanager.pid}
 
 CONCURRENCY=4
 OPTIONS="-c $CONCURRENCY"
