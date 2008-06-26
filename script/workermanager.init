@@ -14,7 +14,7 @@ if [ -f /etc/sysconfig/workermanager ]; then
 fi
 
 # Define name of Program
-ROOT=/usr/bin
+ROOT=${ROOT-/usr/bin}
 prog=${PROG-workermanager.pl}
 pidfile=${PIDFILE-/var/run/workermanager.pid}
 

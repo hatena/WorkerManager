@@ -1,2 +1,3 @@
 CONCURRENCY=4
-PROG=/home/httpd/apps/Hatena-Star/releases/script/workermanager.pl
+ROOT=/home/httpd/apps/Hatena-Star/releases/script
+PROG=workermanager.pl
