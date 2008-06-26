@@ -18,8 +18,8 @@ sub new {
 sub init {
     my $self = shift;
 
-    ($self->{type})->require or die $@;
-    ($self->{type})->new($self->{worker});
+    "WorkerManager::$self->{type}"->use or die $@;
+    $self->{client} =  "WorkerManager::$self->{type}"->new("$self->{worker}");
 
     $self->{pm} = Parallel::ForkManager->new($self->{max_processes})
         or die("Unable to create ForkManager object: $!\n");
@@ -49,8 +49,8 @@ sub main {
 
         my $pid = $self->{pm}->start($count++) and next;
 
-        #$worker->work while 1;
-        sleep 10;
+        $self->{client}->work;
+        #sleep 10;
         $self->{pm}->finish;
     }
     $self->{pm}->wait_all_children;
