@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# service_manager init file
+# Daemon for service_manager
+# Process name: /var/www/cgi-bin/your_daemon_dir/your_service_manager.pl
+
+# Copyright (c) 2006 Perl Tips - http://perltips.twinkle.cc
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+if [ -f /etc/sysconfig/gearmanworkermanager ]; then
+        . /etc/sysconfig/gearmanworkermanager
+fi
+
+# Define name of Program
+ROOT=/usr/bin
+prog=gearmanworkermanager.pl
+pidfile=${PIDFILE-/var/run/gearmanworkermanager.pid}
+
+CONCURRENCY=4
+OPTIONS="-c $CONCURRENCY"
+RETVAL=0
+
+start() {
+    echo -n $"Starting $prog: "
+    daemon $ROOT/$prog $OPTIONS
+    RETVAL=$?
+    echo
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc -p ${pidfile} $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL = 0 ] && rm -f ${lockfile} ${pidfile}
+    return $RETVAL
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+start)
+    start
+    ;;
+stop)
+    stop
+    ;;
+restart)
+    restart
+    ;;
+status)
+    status -p $pidfile $prog
+    ;;
+*)
+echo $"usage: $0 {start|stop|restart|status}"
+RETVAL=1
+esac
+
+exit $RETVAL
