@@ -44,13 +44,14 @@ my $LOGFILE;
 my $ERRORLOGFILE;
 my $MAX_PROCESSES;
 my %CHILD_PIDS;
+my $wm;
 
 sub init {
     $DEBUG = 0;
     $DAEMON = 1;
-    $PIDFILE = "/var/run/gearmanworkermanager.pid";
-    $LOGFILE = "/var/log/gearmanworkermanager.log";
-    $ERRORLOGFILE = "/var/log/gearmanworkermanager_error.log";
+    $PIDFILE = "/var/run/workermanager.pid";
+    $LOGFILE = "/var/log/workermanager.log";
+    $ERRORLOGFILE = "/var/log/workermanager_error.log";
     $MAX_PROCESSES = 4;
     my %opt;
     getopts("hndc:", \%opt);
@@ -70,6 +71,7 @@ sub interrupt {
     setpgrp;
     $SIG{$sig} = 'IGNORE';
     kill $sig, 0;
+    $wm->killall();
     die "killed by $sig";
 
     exit(0);
@@ -118,7 +120,7 @@ sub daemonize {
 
 daemonize if $DAEMON;
 
-my $wm = WorkerManager->new(
+$wm = WorkerManager->new(
     max_processes => $MAX_PROCESSES,
     type => 'TheSchwartz',
     worker => 'Hatena::Star::Worker::UpdateFavorites',
@@ -127,5 +129,5 @@ my $wm = WorkerManager->new(
 $wm->main();
 
 END {
-    $wm->killall();
+    $wm->killall() unless $DAEMON;
 }
