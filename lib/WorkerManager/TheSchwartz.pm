@@ -3,7 +3,6 @@ use strict;
 use warnings;
 
 use TheSchwartz;
-#use Hatena::Star::Worker::UpdateFavorites;
 use UNIVERSAL::require;
 
 sub new {
@@ -21,8 +20,15 @@ sub new {
 
 sub init {
     my $self = shift;
-    "$self->{worker}"->use or die $@;
-    $self->{client}->can_do($self->{worker});
+    if(UNIVERSAL::isa($self->{worker}, 'ARRAY')){
+        for (@{$self->{worker}}){
+            "$_"->use or die $@;
+            $self->{client}->can_do($_);
+        }
+    } else {
+        "$self->{worker}"->use or die $@;
+        $self->{client}->can_do($self->{worker});
+    }
 }
 
 sub work {

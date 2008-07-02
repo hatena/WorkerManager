@@ -19,7 +19,7 @@ sub init {
     my $self = shift;
 
     "WorkerManager::$self->{type}"->use or die $@;
-    $self->{client} =  "WorkerManager::$self->{type}"->new("$self->{worker}");
+    $self->{client} =  "WorkerManager::$self->{type}"->new($self->{worker});
 
     $self->{pm} = Parallel::ForkManager->new($self->{max_processes})
         or die("Unable to create ForkManager object: $!\n");
