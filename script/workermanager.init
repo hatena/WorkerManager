@@ -14,12 +14,14 @@ if [ -f /etc/sysconfig/workermanager ]; then
 fi
 
 # Define name of Program
-ROOT=${ROOT-/usr/bin}
-prog=${PROG-workermanager.pl}
+ROOT=${ROOT-/usr/local/workermanager}
+prog=${PROG-bin/workermanager.pl}
 pidfile=${PIDFILE-/var/run/workermanager.pid}
+conffile=$ROOT/${CONF-conf/worker.conf.yml}
 
 CONCURRENCY=4
-OPTIONS="-c $CONCURRENCY"
+WORKS_PER_CHILD=100
+OPTIONS="-c $CONCURRENCY -w $WORKS_PER_CHILD -f $conffile"
 RETVAL=0
 
 start() {

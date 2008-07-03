@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use TheSchwartz;
+use Time::Piece;
 use UNIVERSAL::require;
 
 sub new {
@@ -20,6 +21,11 @@ sub new {
 
 sub init {
     my $self = shift;
+    $self->{client}->set_verbose(
+        sub {
+            my $msg = shift;
+            $WorkerManager::LOGGER->('TheSchwartz', $msg) if($msg =~ /Working/);
+        });
     if(UNIVERSAL::isa($self->{worker}, 'ARRAY')){
         for (@{$self->{worker}}){
             "$_"->use or die $@;
@@ -33,7 +39,7 @@ sub init {
 
 sub work {
     my $self = shift;
-    my $max = shift || 5;
+    my $max = shift || 100;
     my $delay = shift || 5;
     my $count = 0;
     while ($count < $max) {

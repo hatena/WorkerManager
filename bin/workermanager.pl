@@ -6,30 +6,25 @@ use warnings;
 use Getopt::Std;
 use Proc::Daemon;
 use File::Pid;
+use YAML::Syck;
 
-use Storable qw(thaw);
-use List::Util qw(sum);
-
-use Data::Dumper qw(Dumper);
+#use Data::Dumper qw(Dumper);
 
 use FindBin;
 use lib File::Spec->catdir($FindBin::Bin, '..', 'lib');
-use lib File::Spec->catdir($FindBin::Bin, '..','modules','DBIx-MoCo','lib');
-use lib File::Spec->catdir($FindBin::Bin, '..','modules','Ridge','lib');
-use lib File::Spec->catdir($FindBin::Bin, '..','modules','Hatena','lib');
-use lib File::Spec->catdir($FindBin::Bin, '..','modules','Hatena-Star-Mobile','lib');
-use lib File::Spec->catdir($FindBin::Bin, '..','modules','WorkerManager','lib');
 use WorkerManager;
 
 sub usage {
     print << "EOF";
 
- usage: $0 [-hdn] [-c concurrency]
+ usage: $0 [-hdn] [-c concurrency] [-w works_per_child] -f conf_file
 
         -h   : this (help) message
         -d   : debug
         -n   : prevent deamonize (non fork)
         -c   : the number of concurrency (default 4).
+        -w   : the number of works per child process (default 100).
+        -f   : YAML-formated file of configuration
 
 EOF
 ;
@@ -43,6 +38,8 @@ my $PIDFILE;
 my $LOGFILE;
 my $ERRORLOGFILE;
 my $MAX_PROCESSES;
+my $CONF;
+my $WORKS_PER_CHILD;
 my %CHILD_PIDS;
 my $wm;
 
@@ -53,8 +50,9 @@ sub init {
     $LOGFILE = "/var/log/workermanager.log";
     $ERRORLOGFILE = "/var/log/workermanager_error.log";
     $MAX_PROCESSES = 4;
+    $WORKS_PER_CHILD = 100;
     my %opt;
-    getopts("hndc:", \%opt);
+    getopts("hndc:w:f:", \%opt);
     usage() if $opt{h};
     return %opt;
 }
@@ -62,6 +60,18 @@ sub init {
 BEGIN {
     %opt = init;
     $MAX_PROCESSES = $opt{c} if($opt{c});
+    $WORKS_PER_CHILD = $opt{w} if($opt{w});
+    if($opt{f}){
+        $CONF = LoadFile$opt{f} or die $@;
+        for (@{$CONF->{inc_path}}){
+            unshift @INC, File::Spec->catdir($FindBin::Bin, '..', split('/', $_));
+        }
+        $PIDFILE = $CONF->{pidfile} !~ /^\// ? File::Spec->catdir($FindBin::Bin, '..', $CONF->{pidfile}) : $CONF->{pidfile} if $CONF->{pidfile};
+        $LOGFILE = $CONF->{logfile} !~ /^\// ? File::Spec->catdir($FindBin::Bin, '..', $CONF->{logfile}) : $CONF->{logfile} if $CONF->{logfile};
+        $ERRORLOGFILE = $CONF->{errorlogfile} !~ /^\// ? File::Spec->catdir($FindBin::Bin, '..', $CONF->{errorlogfile}) : $CONF->{errorlogfile} if $CONF->{errorlogfile};
+    } else {
+        usage();
+    }
     $DEBUG = 1 if($opt{d});
     $DAEMON = 0 if($opt{n});
 }
@@ -87,7 +97,7 @@ sub daemonize {
     $SIG{KILL} = 'interrupt';
     $SIG{TERM} = 'interrupt';
 
-    my $pid = File::Pid->new({file => $PIDFILE});
+    my $pid = File::Pid->new({file => $PIDFILE}) or die "Failed to create new File::Pid\n";
     if( $pid->running ){
         die 'The PID in '.$PIDFILE.' is still running.';
     } else {
@@ -97,33 +107,37 @@ sub daemonize {
                 or die "Failed to remove the pid file.";
         }
     }
+    $WorkerManager::LOGFILE = $LOGFILE;
 
     Proc::Daemon::Init;
+    #Proc::Daemon::Init or die "Failed to initialize as daemon.\n";
 
-    if($LOGFILE){
-        open(STDOUT, ">>".$LOGFILE)
-            or die "Failed to re-open STDOUT to ".$LOGFILE;
-    }
     if($ERRORLOGFILE){
+        open(STDOUT, ">>".$ERRORLOGFILE)
+            or die "Failed to re-open STDOUT to ".$ERRORLOGFILE;
         open(STDERR, ">>".$ERRORLOGFILE)
             or die "Failed to re-open STDERR to ".$ERRORLOGFILE;
     }
+
     if($PIDFILE){
         my $pid = File::Pid->new({file => $PIDFILE});
         if( -e $PIDFILE){
             $pid->remove
                 or die "Failed to remove the pid file.";
         }
-        $pid->write;
+        $pid->write or die "Failed to write the pid file.";
     }
 }
 
-daemonize if $DAEMON;
+if($DAEMON) {
+    daemonize or die "Failed to daemonized $@\n";
+}
 
 $wm = WorkerManager->new(
     max_processes => $MAX_PROCESSES,
+    works_per_child => $WORKS_PER_CHILD,
     type => 'TheSchwartz',
-    worker => 'Hatena::Star::Worker::UpdateFavorites',
+    worker => $CONF->{workers},
 );
 
 $wm->main();
