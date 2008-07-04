@@ -8,9 +8,19 @@ sub work {
     my $class = shift;
     my TheSchwartz::Job $job = shift;
 
-    print "Processing 'A'\n";
 
-    $job->completed();
+    my $try = int(rand(10));
+    if($try > 5){
+        print "Processed 'A' ".$job->arg->{foo}."\n";
+        $job->completed();
+    } else {
+        print "Failed 'A' ".$job->arg->{foo}."\n";
+        $job->failed("Failed 'A' ".$job->arg->{foo});
+    }
 }
+
+sub max_retries { 3 }
+sub retry_delay { 20 }
+
 
 1;

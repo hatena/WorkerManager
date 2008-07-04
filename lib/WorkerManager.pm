@@ -16,10 +16,12 @@ our $LOGGER = sub {
         open($LOG, ">>".$LOGFILE)
             or die "Failed to open ".$LOGFILE;
     }
-    if($LOG){
+    if($LOG && $LOGFILE){
         print $LOG localtime->datetime. " $class $msg\n";
         close($LOG);
         undef $LOG;
+    } else {
+        print localtime->datetime. " $class $msg\n";
     }
 };
 
