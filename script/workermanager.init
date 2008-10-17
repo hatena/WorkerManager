@@ -19,8 +19,8 @@ prog=${PROG-bin/workermanager.pl}
 pidfile=${PIDFILE-/var/run/workermanager.pid}
 conffile=$ROOT/${CONF-conf/worker.conf.yml}
 
-CONCURRENCY=4
-WORKS_PER_CHILD=100
+CONCURRENCY=${CONCURRENCY-4}
+WORKS_PER_CHILD=${WORKS_PER_CHILD-100}
 OPTIONS="-c $CONCURRENCY -w $WORKS_PER_CHILD -f $conffile"
 RETVAL=0
 
