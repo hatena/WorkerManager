@@ -2,12 +2,14 @@ package WorkerManager::Client::TheSchwartz;
 use strict;
 use warnings;
 
-use TheSchwartz;
+use DBI;
+use TheSchwartz::Simple;
 
 sub new {
     my $class = shift;
-    my $client = TheSchwartz->new( databases =>
-                                       [+{ dsn => 'dbi:mysql:dbname=theschwartz;host=192.168.3.54', user => 'nobody', pass => 'nobody' }] );
+
+    my $dbh = DBI->connect('dbi:mysql:dbname=theschwartz;host=192.168.3.54', 'nobody', 'nobody');
+    my $client = TheSchwartz::Simple->new([$dbh]);
     my $self = bless {
         client => $client,
     },$class;
@@ -20,10 +22,12 @@ sub insert {
     my $arg = shift;
     my $options = shift;
 
-    my $job = TheSchwartz::Job->new(funcname => $funcname,
-                                    arg => $arg,
-                                    run_after => $options->{run_after} ||= time,
-                                    grabbed_until => $options->{grabbed_until} || 0);
+    my $job = TheSchwartz::Simple::Job->new;
+    $job->funcname($funcname);
+    $job->arg($arg);
+    $job->run_after($options->{run_after} || time);
+    $job->grabbed_until($options->{grabbed_until} || 0);
+
     $self->{client}->insert($job);
 }
 
