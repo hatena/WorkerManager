@@ -11,5 +11,9 @@ use WorkerManager::Client::TheSchwartz;
 use Time::Piece;
 
 my $client = WorkerManager::Client::TheSchwartz->new();
+
 $client->insert('Sandbox::Worker::A' => +{foo => localtime->epoch});
-#$client->insert('Sandbox::Worker::B' => +{foo => "bar2"});
+
+$client->insert('Sandbox::Worker::B' => +{foo => localtime->epoch}, {run_after => time});
+$client->insert('Sandbox::Worker::B' => +{foo => localtime->epoch}, {run_after => time + 30});
+$client->insert('Sandbox::Worker::B' => +{foo => localtime->epoch}, {run_after => time + 60});

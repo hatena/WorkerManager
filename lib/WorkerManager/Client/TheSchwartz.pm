@@ -18,7 +18,13 @@ sub insert {
     my $self = shift;
     my $funcname = shift;
     my $arg = shift;
-    $self->{client}->insert($funcname, $arg);
+    my $options = shift;
+
+    my $job = TheSchwartz::Job->new(funcname => $funcname,
+                                    arg => $arg,
+                                    run_after => $options->{run_after} ||= time,
+                                    grabbed_until => $options->{grabbed_until} || 0);
+    $self->{client}->insert($job);
 }
 
 1;
