@@ -27,6 +27,7 @@ sub insert {
     $job->arg($arg);
     $job->run_after($options->{run_after} || time);
     $job->grabbed_until($options->{grabbed_until} || 0);
+    $job->uniqkey($options->{uniqkey} || undef);
 
     $self->{client}->insert($job);
 }
