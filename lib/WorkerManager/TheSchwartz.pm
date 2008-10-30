@@ -17,10 +17,6 @@ sub new {
     } else {
         $databases =  [+{ dsn => 'dbi:mysql:dbname=theschwartz;host=192.168.3.54', user => 'nobody', pass => 'nobody' }];
     }
-
-    use Data::Dumper;
-    warn Dumper($databases);
-
     my $client = TheSchwartz->new( databases => $databases, %$options);
 
     my $self = bless {

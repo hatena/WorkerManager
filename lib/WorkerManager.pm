@@ -77,10 +77,8 @@ sub set_signal_handlers {
     setpgrp;
     my $interrupt_handle = sub {
         my $sig = shift;
-#        return if $self->{interruptted};
+
         $self->{interruptted} = 1;
-#        $SIG{$sig} = 'IGNORE';
-#        warn "interruptted by $sig";
         if ($self->{pm}->{in_child}) {
             $self->{client}->terminate;
         } else {
