@@ -39,8 +39,10 @@ sub new {
 sub init {
     my $self = shift;
 
-    "WorkerManager::$self->{type}"->use or die $@;
-    $self->{client} =  "WorkerManager::$self->{type}"->new($self->{worker});
+
+    my $worker_client_class = "WorkerManager::" . $self->{type};
+    $worker_client_class->use or die $@;
+    $self->{client} = $worker_client_class->new($self->{worker}, $self->{worker_options}) or die;
 
     $self->{pm} = Parallel::ForkManager->new($self->{max_processes})
         or die("Unable to create ForkManager object: $!\n");
@@ -60,26 +62,75 @@ sub init {
               #print "\n";
           }
     );
+
+    $self->{count} = 0;
+    $self->{interruptted} = undef;
+    $self->{terminating} = undef;
+
+    $self->set_signal_handlers;
+}
+
+
+sub set_signal_handlers {
+    my $self = shift;
+
+    setpgrp;
+    my $interrupt_handle = sub {
+        my $sig = shift;
+#        return if $self->{interruptted};
+        $self->{interruptted} = 1;
+#        $SIG{$sig} = 'IGNORE';
+#        warn "interruptted by $sig";
+        if ($self->{pm}->{in_child}) {
+            $self->{client}->terminate;
+        } else {
+            $self->killall_children;
+            $self->{pm}->wait_all_children;
+        }
+        die "killed by $sig. ($$)";
+        exit(0);
+    };
+
+    $SIG{INT} = $interrupt_handle;
+    $SIG{HUP} = $interrupt_handle;
+    $SIG{QUIT} = $interrupt_handle;
+
+    my $terminate_handle = sub {
+        my $sig = shift;
+        return if $self->{terminating};
+        $self->{terminating} = 1;
+        $SIG{$sig} = 'IGNORE';
+        if ($self->{pm}->{in_child}) {
+            $self->{client}->terminate;
+        } else {
+            $self->terminateall_children;
+        }
+        return;
+    };
+
+    $SIG{TERM} = $terminate_handle;
+}
+
+sub killall_children {
+    my $self = shift;
+    warn "killing. children: " . join(",", keys %{$self->{pids}});
+    kill "INT", $_ for keys %{$self->{pids}};
+}
+
+sub terminateall_children {
+    my $self = shift;
+    warn "terminating. children: " . join(",", keys %{$self->{pids}});
+    kill "TERM", $_ for keys %{$self->{pids}};
 }
 
 sub main {
     my $self = shift;
-    my $count = 1;
-    while (1) {
-        my $pid = $self->{pm}->start($count++) and next;
-
+    while (!$self->{interruptted} || !$self->{terminating}) {
+        my $pid = $self->{pm}->start($self->{count}++) and next;
         $self->{client}->work($self->{works_per_child});
         $self->{pm}->finish;
     }
     $self->{pm}->wait_all_children;
 }
 
-sub killall {
-    my $self = shift;
-    foreach (keys %{$self->{pids}}){
-        kill("TERM", $_);
-    }
-}
-
 1;
-

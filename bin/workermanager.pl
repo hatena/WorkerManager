@@ -64,7 +64,7 @@ BEGIN {
     if($opt{f}){
         $CONF = LoadFile$opt{f} or die $@;
         for (@{$CONF->{inc_path}}){
-            unshift @INC, File::Spec->catdir($FindBin::Bin, '..', split('/', $_));
+            unshift @INC, m{^/} ? $_ : File::Spec->catdir($FindBin::Bin, '..', split('/', $_));
         }
         $PIDFILE = $CONF->{pidfile} !~ /^\// ? File::Spec->catdir($FindBin::Bin, '..', $CONF->{pidfile}) : $CONF->{pidfile} if $CONF->{pidfile};
         $LOGFILE = $CONF->{logfile} !~ /^\// ? File::Spec->catdir($FindBin::Bin, '..', $CONF->{logfile}) : $CONF->{logfile} if $CONF->{logfile};
@@ -76,26 +76,26 @@ BEGIN {
     $DAEMON = 0 if($opt{n});
 }
 
-sub interrupt {
-    my $sig = shift;
-    setpgrp;
-    $SIG{$sig} = 'IGNORE';
-    kill $sig, 0;
-    $wm->killall();
-    die "killed by $sig";
+#sub interrupt {
+#    my $sig = shift;
+#    setpgrp;
+#    $SIG{$sig} = 'IGNORE';
+#    kill $sig, 0;
+#    $wm->killall();
+#    die "killed by $sig";
 
-    exit(0);
-}
+#    exit(0);
+#}
 
 sub daemonize {
     #my $self = shift;
     #return unless $self->config->{daemon};
 
-    $SIG{INT} = 'interrupt';
-    $SIG{HUP} = 'interrupt';
-    $SIG{QUIT} = 'interrupt';
-    $SIG{KILL} = 'interrupt';
-    $SIG{TERM} = 'interrupt';
+#    $SIG{INT} = \&interrupt;
+#    $SIG{HUP} = \&interrupt;
+#    $SIG{QUIT} = \&interrupt;
+#    $SIG{KILL} = \&interrupt; # XXX cannot overwrite
+#    $SIG{TERM} = \&interrupt;
 
     my $pid = File::Pid->new({file => $PIDFILE}) or die "Failed to create new File::Pid\n";
     if( $pid->running ){
@@ -119,6 +119,8 @@ sub daemonize {
             or die "Failed to re-open STDERR to ".$ERRORLOGFILE;
     }
 
+    close STDIN;
+
     if($PIDFILE){
         my $pid = File::Pid->new({file => $PIDFILE});
         if( -e $PIDFILE){
@@ -136,12 +138,13 @@ if($DAEMON) {
 $wm = WorkerManager->new(
     max_processes => $MAX_PROCESSES,
     works_per_child => $WORKS_PER_CHILD,
-    type => 'TheSchwartz',
+    type => $CONF->{type} || 'TheSchwartz',
+    worker_options => $CONF->{worker_options} || {},
     worker => $CONF->{workers},
 );
 
 $wm->main();
 
 END {
-    $wm->killall() unless $DAEMON;
+    $wm->killall_children() unless $DAEMON;
 }
