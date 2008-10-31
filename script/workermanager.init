@@ -1,8 +1,10 @@
 #!/bin/bash
-
 # service_manager init file
 # Daemon for service_manager
 # Process name: /var/www/cgi-bin/your_daemon_dir/your_service_manager.pl
+# chkconfig: - 86 17
+# description: WorkerManager
+# pidfile: /var/run/workermanager.pid
 
 # Copyright (c) 2006 Perl Tips - http://perltips.twinkle.cc
 
