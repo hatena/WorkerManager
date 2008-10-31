@@ -38,11 +38,12 @@ sub init {
     if (UNIVERSAL::isa($self->{worker}, 'ARRAY')){
         for (@{$self->{worker}}){
             "$_"->use or warn $@;
-#            "$_"->use;
+            $_->can('work') or die "cannot ${_}->work";
             $self->{client}->can_do($_);
         }
     } else {
         "$self->{worker}"->use or warn $@;
+        $_->can('work') or die "cannot ${_}->work";
         $self->{client}->can_do($self->{worker});
     }
 }
