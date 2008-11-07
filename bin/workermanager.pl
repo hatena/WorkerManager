@@ -76,53 +76,28 @@ BEGIN {
     $DAEMON = 0 if($opt{n});
 }
 
-#sub interrupt {
-#    my $sig = shift;
-#    setpgrp;
-#    $SIG{$sig} = 'IGNORE';
-#    kill $sig, 0;
-#    $wm->killall();
-#    die "killed by $sig";
-
-#    exit(0);
-#}
-
+my $pid;
 sub daemonize {
     #my $self = shift;
     #return unless $self->config->{daemon};
 
-#    $SIG{INT} = \&interrupt;
-#    $SIG{HUP} = \&interrupt;
-#    $SIG{QUIT} = \&interrupt;
-#    $SIG{KILL} = \&interrupt; # XXX cannot overwrite
-#    $SIG{TERM} = \&interrupt;
-
-    my $pid = File::Pid->new({file => $PIDFILE}) or die "Failed to create new File::Pid\n";
-    if( $pid->running ){
-        die 'The PID in '.$PIDFILE.' is still running.';
-    } else {
-        if( -e $PIDFILE){
-            warn 'The pid file '.$PIDFILE.' is still exist. Try to remove it.';
-            $pid->remove
-                or die "Failed to remove the pid file.";
+    if ($PIDFILE) {
+        $pid = File::Pid->new({file => $PIDFILE}) or die "Failed to create new File::Pid\n";
+        if( $pid->running ){
+            die 'The PID in '.$PIDFILE.' is still running.';
+        } else {
+            if( -e $PIDFILE){
+                die 'The pid file '.$PIDFILE.' is still exist. Try to remove it.';
+                $pid->remove
+                    or die "Failed to remove the pid file.";
+            }
         }
     }
-    $WorkerManager::LOGFILE = $LOGFILE;
 
     Proc::Daemon::Init;
-    #Proc::Daemon::Init or die "Failed to initialize as daemon.\n";
-
-    if($ERRORLOGFILE){
-        open(STDOUT, ">>".$ERRORLOGFILE)
-            or die "Failed to re-open STDOUT to ".$ERRORLOGFILE;
-        open(STDERR, ">>".$ERRORLOGFILE)
-            or die "Failed to re-open STDERR to ".$ERRORLOGFILE;
-    }
-
-    close STDIN;
 
     if($PIDFILE){
-        my $pid = File::Pid->new({file => $PIDFILE});
+        $pid = File::Pid->new({file => $PIDFILE});
         if( -e $PIDFILE){
             $pid->remove
                 or die "Failed to remove the pid file.";
@@ -141,9 +116,12 @@ $wm = WorkerManager->new(
     type => $CONF->{type} || 'TheSchwartz',
     worker_options => $CONF->{worker_options} || {},
     worker => $CONF->{workers},
+    error_log_file => $DAEMON ? $ERRORLOGFILE : undef,
+    log_file => $DAEMON ? $LOGFILE : undef,
 );
 
 $wm->main();
+$pid->remove if $pid;
 
 END {
     $wm->killall_children() unless $DAEMON;
