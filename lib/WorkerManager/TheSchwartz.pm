@@ -5,6 +5,7 @@ use warnings;
 use TheSchwartz;
 use Time::Piece;
 use UNIVERSAL::require;
+use Time::HiRes qw( time );
 use POSIX qw(getppid);
 
 sub new {
@@ -23,6 +24,7 @@ sub new {
         client => $client,
         worker => $worker,
         terminate => undef,
+	start_time => undef,
     }, $class;
     $self->init;
     $self;
@@ -33,7 +35,19 @@ sub init {
     $self->{client}->set_verbose(
         sub {
             my $msg = shift;
-            $WorkerManager::LOGGER->('TheSchwartz', $msg) if($msg =~ /Working/);
+            my $job = shift;
+            # $WorkerManager::LOGGER->('TheSchwartz', $msg) if($msg =~ /Working/);
+            if($msg =~ /Working/){
+		$self->{start_time} = time;
+	    }
+            return if($msg =~ /found no jobs/);
+	    if($msg =~ /^job completed|^job failed/){
+		$msg .= sprintf " %s", $job->funcname;
+		$msg .= sprintf " process:%d", (time - $self->{start_time}) * 1000 if($self->{start_time});
+		$msg .= sprintf " delay:%d", ($self->{start_time} - $job->insert_time) * 1000 if($job && $self->{start_time});
+		$self->{start_time} = undef;
+	    };
+            $WorkerManager::LOGGER->('TheSchwartz', $msg) unless($msg =~ /found no jobs/);
         });
     if (UNIVERSAL::isa($self->{worker}, 'ARRAY')){
         for (@{$self->{worker}}){
