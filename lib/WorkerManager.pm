@@ -65,6 +65,10 @@ sub open_logs {
 sub init {
     my $self = shift;
 
+    if ($self->{ridge_env}) {
+        $ENV{RIDGE_ENV} = $self->{ridge_env};
+    }
+
     my $worker_client_class = "WorkerManager::" . $self->{type};
     $worker_client_class->use or die $@;
     $self->{client} = $worker_client_class->new($self->{worker}, $self->{worker_options}) or die;
