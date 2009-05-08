@@ -65,6 +65,10 @@ sub open_logs {
 sub init {
     my $self = shift;
 
+    for my $key (keys %{$self->{env}}) {
+        $ENV{$key} = $self->{env}{$key};
+    }
+
     my $worker_client_class = "WorkerManager::" . $self->{type};
     $worker_client_class->use or die $@;
     $self->{client} = $worker_client_class->new($self->{worker}, $self->{worker_options}) or die;

@@ -31,6 +31,7 @@ sub insert {
     $job->run_after($options->{run_after} || time);
     $job->grabbed_until($options->{grabbed_until} || 0);
     $job->uniqkey($options->{uniqkey} || undef);
+    $job->priority($options->{priority} || undef) if($job->can('priority'));
 
     $self->{client}->insert($job);
 }

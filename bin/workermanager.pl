@@ -117,6 +117,8 @@ my $wm = WorkerManager->new(
     worker => $CONF->{workers},
     error_log_file => $DAEMON ? $ERRORLOGFILE : undef,
     log_file => $DAEMON ? $LOGFILE : undef,
+    ridge_env => $CONF->{ridge_env} || '',
+    env => $CONF->{env} || {},
 );
 
 $wm->main();
