@@ -41,7 +41,6 @@ my $MAX_PROCESSES;
 my $CONF;
 my $WORKS_PER_CHILD;
 my %CHILD_PIDS;
-my $wm;
 
 sub init {
     $DEBUG = 0;
@@ -87,7 +86,7 @@ sub daemonize {
             die 'The PID in '.$PIDFILE.' is still running.';
         } else {
             if( -e $PIDFILE){
-                die 'The pid file '.$PIDFILE.' is still exist. Try to remove it.';
+                warn 'The pid file '.$PIDFILE.' is still exist. Try to remove it.';
                 $pid->remove
                     or die "Failed to remove the pid file.";
             }
@@ -97,7 +96,7 @@ sub daemonize {
     Proc::Daemon::Init;
 
     if($PIDFILE){
-        $pid = File::Pid->new({file => $PIDFILE});
+        $pid = File::Pid->new({file => $PIDFILE, pid => $$});
         if( -e $PIDFILE){
             $pid->remove
                 or die "Failed to remove the pid file.";
@@ -110,7 +109,7 @@ if($DAEMON) {
     daemonize or die "Failed to daemonized $@\n";
 }
 
-$wm = WorkerManager->new(
+my $wm = WorkerManager->new(
     max_processes => $MAX_PROCESSES,
     works_per_child => $WORKS_PER_CHILD,
     type => $CONF->{type} || 'TheSchwartz',
