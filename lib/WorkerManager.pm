@@ -56,7 +56,7 @@ sub open_logs {
         
         open(STDOUT, ">>" . $self->{error_log_file})
             or die "Failed to re-open STDOUT to ". $self->{error_log_file};
-        open STDERR, ">>&STDOUT"     or die "Can’t dup STDOUT: $!";
+        open STDERR, ">>&STDOUT"     or die "Can't dup STDOUT: $!";
         STDOUT->autoflush(1);
         STDERR->autoflush(1);
     }
