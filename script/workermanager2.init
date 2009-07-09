@@ -11,7 +11,7 @@
 # source function library
 . /etc/rc.d/init.d/functions
 
-if [ -f /etc/sysconfig/workermanager ]; then
+if [ -f /etc/sysconfig/workermanager2 ]; then
         . /etc/sysconfig/workermanager2
 fi
 
