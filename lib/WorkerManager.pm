@@ -66,7 +66,7 @@ sub init {
     my $self = shift;
 
     for my $key (keys %{$self->{env}}) {
-        $ENV{$key} = $self->{env}{$key};
+        $ENV{$key} = $self->{env}{$key} if !defined $ENV{$key};
     }
 
     my $worker_client_class = "WorkerManager::" . $self->{type};
