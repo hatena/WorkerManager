@@ -125,5 +125,5 @@ $wm->main();
 $pid->remove if $pid;
 
 END {
-    $wm->killall_children() unless $DAEMON;
+    $wm->killall_children() if !$DAEMON && exists $wm->{pids};
 }

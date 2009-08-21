@@ -131,7 +131,7 @@ sub set_signal_handlers {
     };
 
     $SIG{INT} = $interrupt_handle;
-    
+
     my $reopen_log_handle = sub {
         my $sig = shift;
         $self->open_logs;
@@ -159,7 +159,7 @@ sub set_signal_handlers_for_child {
         $self->{client}->terminate;
         exit 0;
     };
-    $SIG{INT} = $terminate_handle;
+    $SIG{INT} = $interrupt_handle;
 
     my $reopen_log_handle = sub {
         my $sig = shift;
@@ -172,12 +172,14 @@ sub terminate_all_children {
     my $self = shift;
     warn "terminating. children: " . join(",", keys %{$self->{pids}});
     kill "TERM", $_ for keys %{$self->{pids}};
+    delete $self->{pids};
 }
 
 sub killall_children {
     my $self = shift;
     warn "killing. children: " . join(",", keys %{$self->{pids}});
     kill "INT", $_ for keys %{$self->{pids}};
+    delete $self->{pids};
 }
 
 sub reopen_children {
