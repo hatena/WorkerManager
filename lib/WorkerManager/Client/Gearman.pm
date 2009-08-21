@@ -11,7 +11,7 @@ sub new {
     $args->{job_servers} ||= [qw(127.0.0.1)];
 
     my $self = $class->SUPER::new($args);
-       $self->client = Gearman::Client->new(job_servers => $args->{job_servers});
+       $self->client(Gearman::Client->new(job_servers => $args->{job_servers}));
        $self;
 }
 

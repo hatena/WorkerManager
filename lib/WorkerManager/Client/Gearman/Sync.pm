@@ -5,7 +5,7 @@ use base qw(WorkerManager::Client::Gearman);
 
 sub insert {
     my $self = shift;
-       $self->worker->do_task(@_);
+       $self->client->do_task(@_);
 }
 
 1;

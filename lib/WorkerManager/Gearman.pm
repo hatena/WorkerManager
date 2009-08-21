@@ -19,19 +19,19 @@ sub new {
     my $prefix = delete $options->{prefix} || '';
     my $job_servers;
     if ($job_servers = delete $options->{job_servers}) {
-        $job_servers = [$job_servers] unless ref $job_servers ne 'ARRAY';
+        $job_servers = [$job_servers] if ref $job_servers ne 'ARRAY';
     }
     else {
         $job_servers = [qw(127.0.0.1)];
     }
 
-    my $self = bless {
+    my $self = $class->SUPER::new({
         job_servers    => $job_servers,
         prefix         => $prefix,
         worker_classes => $worker_classes || [],
         terminate      => undef,
         workers        => [],
-    }, $class;
+    });
     $self->init;
     $self;
 }
@@ -40,10 +40,10 @@ sub init {
     my $self = shift;
     for my $worker_class (@{$self->worker_classes}) {
         $worker_class->use or warn $@;
-        push @{$self->workers}, $worker_class->new(
+        push @{$self->workers}, $worker_class->new({
             job_servers => $self->job_servers,
             prefix      => $self->prefix,
-        );
+        });
     }
 }
 
