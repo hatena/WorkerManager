@@ -1,11 +1,17 @@
 package WorkerManager::Client::Gearman::Sync;
 use strict;
 use warnings;
+use Danga::Socket;
 use base qw(WorkerManager::Client::Gearman);
+
+__PACKAGE__->client_class('Gearman::Client::Async');
 
 sub insert {
     my $self = shift;
-       $self->client->do_task(@_);
+    my $task = $self->_get_task_from_args(@_);
+    $self->client->add_task($task);
+    Danga::Socket->SetPostLoopCallback( sub { !$task->is_finished } );
+    Danga::Socket->EventLoop;
 }
 
 1;
