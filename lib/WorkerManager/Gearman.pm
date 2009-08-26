@@ -58,7 +58,18 @@ sub work {
             exit(1);
         }
         for my $worker (@{$self->workers}) {
-            $worker->work;
+            $worker->worker->work(
+                on_start => sub {
+                    my $job = shift;
+                    $WorkerManager::LOGGER->('Gearman', sprintf('started: %s', ref $worker));
+                },
+                on_complete => sub {
+                    $WorkerManager::LOGGER->('Gearman', sprintf('job completed: %s', ref $worker));
+                },
+                on_fail => sub {
+                    $WorkerManager::LOGGER->('Gearman', sprintf('job failed: %s', ref $worker));
+                },
+            );
         }
         $count++;
         sleep $delay;
