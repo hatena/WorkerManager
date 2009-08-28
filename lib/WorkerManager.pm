@@ -191,7 +191,7 @@ sub main {
     my $self = shift;
     while (!$self->{terminating}) {
         my $pid = $self->{pm}->start($self->{count}++) and next;
-        $self->set_signal_handlers_for_child;
+        $self->set_signal_handlers_for_child if $self->{pm}->{in_child};
         $self->{client}->work($self->{works_per_child});
         $self->{pm}->finish;
     }
