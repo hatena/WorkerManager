@@ -11,6 +11,7 @@ sub insert {
     my $task = $self->_get_task_from_args(@_);
     $self->client->add_task($task);
     Danga::Socket->SetPostLoopCallback( sub { !$task->is_finished } );
+    Danga::Socket->SetLoopTimeout(($task->{timeout} || 1) * 1000);
     Danga::Socket->EventLoop;
 }
 
