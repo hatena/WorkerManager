@@ -119,11 +119,12 @@ my $wm = WorkerManager->new(
     log_file => $DAEMON ? $LOGFILE : undef,
     ridge_env => $CONF->{ridge_env} || '',
     env => $CONF->{env} || {},
+    wait_terminating => $CONF->{wait_terminating} || 10,
 );
 
 $wm->main();
 $pid->remove if $pid;
 
 END {
-    $wm->killall_children() if !$DAEMON && exists $wm->{pids};
+    $wm->killall_children() if !$DAEMON && ! $wm->{pm}->{in_child};
 }

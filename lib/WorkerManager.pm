@@ -51,8 +51,8 @@ sub open_logs {
     }
     
     if ($self->{error_log_file}) {
-        close STDOUT;
-        close STDERR;
+#        close STDOUT;
+#        close STDERR;
         
         open(STDOUT, ">>" . $self->{error_log_file})
             or die "Failed to re-open STDOUT to ". $self->{error_log_file};
@@ -79,7 +79,7 @@ sub init {
     $self->{pm}->run_on_finish(
         sub { my ($pid, $exit_code, $ident) = @_;
               $LOGGER->('WorkerManager', "$ident exited with PID $pid and exit code: $exit_code");
-              delete $self->{pids};
+              delete $self->{pids}->{$pid};
           }
     );
 
@@ -105,7 +105,7 @@ sub set_signal_handlers {
     setpgrp;
     my $terminate_handle = sub {
         my $sig = shift;
-#        warn "=== killed by $sig. ($$)";
+        warn "=== killed by $sig. ($$)";
 
         $self->{terminating} = 1;
         $self->{client}->terminate if $self->{client};
@@ -120,7 +120,7 @@ sub set_signal_handlers {
 
     my $interrupt_handle = sub {
         my $sig = shift;
-        warn "=== killed by $sig. ($$)";
+#        warn "=== killed by $sig. ($$)";
 
         $self->{terminating} = 1;
         $self->{client}->terminate if $self->{client};
@@ -172,31 +172,38 @@ sub terminate_all_children {
     my $self = shift;
     warn "terminating. children: " . join(",", keys %{$self->{pids}});
     kill "TERM", $_ for keys %{$self->{pids}};
-    delete $self->{pids};
 }
 
 sub killall_children {
     my $self = shift;
     warn "killing. children: " . join(",", keys %{$self->{pids}});
     kill "INT", $_ for keys %{$self->{pids}};
-    delete $self->{pids};
 }
 
 sub reopen_children {
     my $self = shift;
-    kill "HUP", $_ for keys %{$self->{pids}};
+    $self->terminate_all_children;
 }
 
 sub main {
     my $self = shift;
     while (!$self->{terminating}) {
-        my $pid = $self->{pm}->start($self->{count}++) and next;
+        my $pid = $self->{pm}->start(++$self->{count}) and next;
         $self->set_signal_handlers_for_child;
+        $0 .= " [child process $self->{count}]";
         $self->{client}->work($self->{works_per_child});
         $self->{pm}->finish;
     }
     $self->terminate_all_children;
+    local $SIG{ALRM} = sub {
+        $LOGGER->('WorkerManager', "Timeout to terminate children");
+        $self->killall_children;
+        exit 1;
+    };
+    alarm($self->{wait_terminating} || 10);
     $self->{pm}->wait_all_children;
+    alarm 0;
+
 }
 
 1;
