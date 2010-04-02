@@ -4,6 +4,7 @@ use warnings;
 
 use DBI;
 use TheSchwartz::Simple;
+use UNIVERSAL::require;
 
 sub new {
     my ($class, $args) = @_;
@@ -11,12 +12,14 @@ sub new {
     my $user = $args->{user} || 'nobody';
     my $pass = $args->{pass} || 'nobody';
 
-    my $dbh = DBI->connect($dns, $user, $pass);
-    my $client = TheSchwartz::Simple->new([$dbh]);
-    my $self = bless {
-        client => $client,
-    }, $class;
-    $self;
+    my $client;
+    if ($ENV{DISABLE_WORKER}) {
+        TheSchwartz->require;
+    } else {
+        my $dbh = DBI->connect($dns, $user, $pass);
+        $client = TheSchwartz::Simple->new([$dbh]);
+    }
+    bless { client => $client }, $class;
 }
 
 sub insert {
@@ -25,6 +28,7 @@ sub insert {
     my $arg = shift;
     my $options = shift;
 
+    #my $job = $ENV{DISABLE_WORKER} ? TheSchwartz::Job->new : TheSchwartz::Simple::Job->new;
     my $job = TheSchwartz::Simple::Job->new;
     $job->funcname($funcname);
     $job->arg($arg);
@@ -33,7 +37,16 @@ sub insert {
     $job->uniqkey($options->{uniqkey} || undef);
     $job->priority($options->{priority} || undef) if($job->can('priority'));
 
-    $self->{client}->insert($job);
+    eval {
+        if ($ENV{DISABLE_WORKER}) {
+            $funcname->require;
+            $funcname->work($job);
+        } else {
+            $self->{client}->insert($job)
+        }
+    };
+    warn $@ if $@;
+    return !$@;
 }
 
 1;
