@@ -15,6 +15,7 @@ sub new {
     my $client;
     if ($ENV{DISABLE_WORKER}) {
         TheSchwartz->require;
+        TheSchwartz::Job->require;
     } else {
         my $dbh = DBI->connect($dns, $user, $pass);
         $client = TheSchwartz::Simple->new([$dbh]);
@@ -28,8 +29,7 @@ sub insert {
     my $arg = shift;
     my $options = shift;
 
-    #my $job = $ENV{DISABLE_WORKER} ? TheSchwartz::Job->new : TheSchwartz::Simple::Job->new;
-    my $job = TheSchwartz::Simple::Job->new;
+    my $job = $ENV{DISABLE_WORKER} ? TheSchwartz::Job->new : TheSchwartz::Simple::Job->new;
     $job->funcname($funcname);
     $job->arg($arg);
     $job->run_after($options->{run_after} || time);
