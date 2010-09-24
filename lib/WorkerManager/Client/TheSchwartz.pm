@@ -8,7 +8,8 @@ use UNIVERSAL::require;
 
 sub new {
     my ($class, $args) = @_;
-    my $dns = $args->{dns} || 'dbi:mysql:dbname=theschwartz;host=192.168.3.54';
+    # Old version had typo...
+    my $dsn = $args->{dsn} || $args->{dns} || 'dbi:mysql:dbname=theschwartz;host=192.168.3.54';
     my $user = $args->{user} || 'nobody';
     my $pass = $args->{pass} || 'nobody';
 
@@ -17,7 +18,7 @@ sub new {
         TheSchwartz->require;
         TheSchwartz::Job->require;
     } else {
-        my $dbh = DBI->connect($dns, $user, $pass);
+        my $dbh = DBI->connect($dsn, $user, $pass);
         $client = TheSchwartz::Simple->new([$dbh]);
     }
     bless { client => $client }, $class;
