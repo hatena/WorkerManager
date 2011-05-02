@@ -1,9 +1,12 @@
-/var/log/workermanager*.log {
+/var/log/*workermanager*.log {
+    daily
+    compress
+    delaycompress
     missingok
     notifempty
     sharedscripts
     postrotate
-        /sbin/service workermanager restart > /dev/null 2>/dev/null || true
+        for i in /etc/init.d/workermanager*; do $i restart > /dev/null 2>/dev/null || true; done
     endscript
 }
 
