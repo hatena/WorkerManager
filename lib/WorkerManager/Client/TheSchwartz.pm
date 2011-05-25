@@ -18,7 +18,7 @@ sub new {
         TheSchwartz->require;
         TheSchwartz::Job->require;
     } else {
-        my $dbh = DBI->connect($dsn, $user, $pass);
+        my $dbh = DBI->connect($dsn, $user, $pass, {RaiseError => 1});
         $client = TheSchwartz::Simple->new([$dbh]);
     }
     bless { client => $client }, $class;
