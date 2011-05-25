@@ -38,16 +38,16 @@ sub insert {
     $job->uniqkey($options->{uniqkey} || undef);
     $job->priority($options->{priority} || undef) if($job->can('priority'));
 
-    eval {
-        if ($ENV{DISABLE_WORKER}) {
+    if ($ENV{DISABLE_WORKER}) {
+        eval {
             $funcname->require;
             $funcname->work($job);
-        } else {
-            $self->{client}->insert($job)
+            warn $@ if $@;
+            return !$@;
         }
-    };
-    warn $@ if $@;
-    return !$@;
+    } else {
+        return $self->{client}->insert($job)
+    }
 }
 
 1;
