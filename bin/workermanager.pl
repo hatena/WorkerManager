@@ -17,11 +17,12 @@ use WorkerManager;
 sub usage {
     print << "EOF";
 
- usage: $0 [-hdn] [-c concurrency] [-w works_per_child] -f conf_file
+ usage: $0 [-hdnl] [-c concurrency] [-w works_per_child] -f conf_file
 
         -h   : this (help) message
         -d   : debug
         -n   : prevent deamonize (non fork)
+        -l   : with logging (even if not demonized)
         -c   : the number of concurrency (default 4).
         -w   : the number of works per child process (default 100).
         -f   : YAML-formated file of configuration
@@ -41,6 +42,7 @@ my $MAX_PROCESSES;
 my $CONF;
 my $WORKS_PER_CHILD;
 my %CHILD_PIDS;
+my $LOGGING;
 
 sub init {
     $DEBUG = 0;
@@ -50,6 +52,7 @@ sub init {
     $ERRORLOGFILE = "/var/log/workermanager_error.log";
     $MAX_PROCESSES = 4;
     $WORKS_PER_CHILD = 100;
+    $LOGGING = 0;
     my %opt;
     getopts("hndc:w:f:", \%opt);
     usage() if $opt{h};
@@ -77,6 +80,7 @@ BEGIN {
     }
     $DEBUG = 1 if($opt{d});
     $DAEMON = 0 if($opt{n});
+    $LOGGING = 1 if($opt{l});
 }
 
 my $pid;
@@ -119,8 +123,8 @@ my $wm = WorkerManager->new(
     type => $CONF->{type} || 'TheSchwartz',
     worker_options => $CONF->{worker_options} || {},
     worker => $CONF->{workers},
-    error_log_file => $DAEMON ? $ERRORLOGFILE : undef,
-    log_file => $DAEMON ? $LOGFILE : undef,
+    error_log_file => ($DAEMON || $LOGGING) ? $ERRORLOGFILE : undef,
+    log_file => ($DAEMON || $LOGGING) ? $LOGFILE : undef,
     ridge_env => $CONF->{ridge_env} || '',
     env => $CONF->{env} || {},
     wait_terminating => $CONF->{wait_terminating} || 10,
