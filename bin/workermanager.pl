@@ -54,7 +54,7 @@ sub init {
     $WORKS_PER_CHILD = 100;
     $LOGGING = 0;
     my %opt;
-    getopts("hndc:w:f:", \%opt);
+    getopts("hnldc:w:f:", \%opt);
     usage() if $opt{h};
     return %opt;
 }
