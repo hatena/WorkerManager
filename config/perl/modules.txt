@@ -1,0 +1,10 @@
+Danga::Socket
+File::Pid
+Gearman
+Gearman::Client::Async
+Parallel::ForkManager
+Proc::Daemon
+TheSchwartz
+TheSchwartz::Simple
+Time::Piece::MySQL
+UNIVERSAL::require
