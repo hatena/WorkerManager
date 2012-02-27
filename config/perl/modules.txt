@@ -1,6 +1,6 @@
 Danga::Socket
 File::Pid
-Gearman
+Gearman::Client
 Gearman::Client::Async
 Parallel::ForkManager
 Proc::Daemon
