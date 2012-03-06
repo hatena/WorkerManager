@@ -68,6 +68,10 @@ BEGIN {
         $PIDFILE = $CONF->{pidfile} !~ /^\// ? File::Spec->catdir($FindBin::Bin, '..', $CONF->{pidfile}) : $CONF->{pidfile} if $CONF->{pidfile};
         $LOGFILE = $CONF->{logfile} !~ /^\// ? File::Spec->catdir($FindBin::Bin, '..', $CONF->{logfile}) : $CONF->{logfile} if $CONF->{logfile};
         $ERRORLOGFILE = $CONF->{errorlogfile} !~ /^\// ? File::Spec->catdir($FindBin::Bin, '..', $CONF->{errorlogfile}) : $CONF->{errorlogfile} if $CONF->{errorlogfile};
+        if ($CONF->{startupfile}) {
+            my $startup = $CONF->{startupfile} !~ /^\// ? File::Spec->catdir($FindBin::Bin, '..', $CONF->{startupfile}) : $CONF->{startupfile};
+            do $startup or die "$startup: $@ $!";
+        }
     } else {
         usage();
     }
