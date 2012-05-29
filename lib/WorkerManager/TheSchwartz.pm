@@ -7,6 +7,7 @@ use Time::Piece;
 use UNIVERSAL::require;
 use Time::HiRes qw( time );
 use POSIX qw(getppid);
+use Carp;
 
 sub new {
     my ($class, $worker, $options) = @_;
@@ -16,7 +17,7 @@ sub new {
     if ($databases = delete $options->{databases}) {
         $databases = [$databases] unless UNIVERSAL::isa($databases, 'ARRAY');
     } else {
-        $databases =  [+{ dsn => 'dbi:mysql:dbname=theschwartz;host=192.168.3.54', user => 'nobody', pass => 'nobody' }];
+        croak 'not specified database information in config file for worker manager';
     }
     my $client = TheSchwartz->new( databases => $databases, %$options);
 

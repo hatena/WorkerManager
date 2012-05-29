@@ -5,11 +5,12 @@ use warnings;
 use DBI;
 use TheSchwartz::Simple;
 use UNIVERSAL::require;
+use Carp;
 
 sub new {
     my ($class, $args) = @_;
     # Old version had typo...
-    my $dsn = $args->{dsn} || $args->{dns} || 'dbi:mysql:dbname=theschwartz;host=192.168.3.54';
+    my $dsn = $args->{dsn} || $args->{dns} || croak 'not specified dsn for worker manager';
     my $user = $args->{user} || 'nobody';
     my $pass = $args->{pass} || 'nobody';
 
