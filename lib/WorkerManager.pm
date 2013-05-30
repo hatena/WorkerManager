@@ -135,6 +135,8 @@ sub set_signal_handlers {
     my $reopen_log_handle = sub {
         my $sig = shift;
         $self->open_logs;
+        warn "reopening logs. children: " . join(",", keys %{$self->{pids}});
+        kill "HUP", $_ for keys %{$self->{pids}};
     };
     $SIG{HUP} = $reopen_log_handle;
 }
