@@ -107,7 +107,6 @@ sub set_signal_handlers {
         warn "=== killed by $sig. ($$)";
 
         $self->{terminating} = 1;
-        $self->{client}->terminate if $self->{client};
         unless ($self->{pm}->{in_child}) {
             $self->terminate_all_children;
         }
@@ -122,7 +121,6 @@ sub set_signal_handlers {
 #        warn "=== killed by $sig. ($$)";
 
         $self->{terminating} = 1;
-        $self->{client}->terminate if $self->{client};
         unless ($self->{pm}->{in_child}) {
             $self->killall_children;
         }
