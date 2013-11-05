@@ -6,5 +6,4 @@ Parallel::ForkManager
 Proc::Daemon
 TheSchwartz
 TheSchwartz::Simple
-Time::Piece::MySQL
 UNIVERSAL::require
