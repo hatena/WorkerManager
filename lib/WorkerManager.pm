@@ -143,7 +143,7 @@ sub set_signal_handlers_for_child {
     my $terminate_handle = sub {
         my $sig = shift;
         $self->{terminating} = 1;
-        $self->{client}->terminate;
+        $self->{client}->terminate if $self->{client};
     };
 
     $SIG{QUIT} = $terminate_handle;
@@ -153,7 +153,7 @@ sub set_signal_handlers_for_child {
         my $sig = shift;
         warn "killed by $sig. ($$)";
         $self->{terminating} = 1;
-        $self->{client}->terminate;
+        $self->{client}->terminate if $self->{client};
         exit 0;
     };
     $SIG{INT} = $interrupt_handle;
