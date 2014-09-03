@@ -22,7 +22,7 @@ sub start_scoreboard {
     print SB join("\n", ("pid=$$",
                          'funcname='.($class||''),
                          'jobid='.$job->jobid,
-                         'dsn='.$job->handle->hashed_dsn,
+                         'dsn='.$job->handle->dsn_hashed,
                          'started='.($job->grabbed_until-($class->grab_for||1)),
                          'arg='._serialize_args($job->arg),
                         )
