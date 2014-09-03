@@ -22,9 +22,9 @@ sub start_scoreboard {
     print SB join("\n", ("pid=$$",
                          'funcname='.($class||''),
                          'jobid='.$job->jobid,
-                         'dsn='.$job->handle->dsn_hashed,
+                         'hashdsn='.$job->handle->dsn_hashed,
                          'started='.($job->grabbed_until-($class->grab_for||1)),
-                         'arg='._serialize_args($job->arg),
+                         'arg='.TheSchwartz::_serialize_args($job->arg),
                         )
                  ), "\n";
     close(SB);
