@@ -2,7 +2,7 @@ package WorkerManager::TheSchwartz;
 use strict;
 use warnings;
 
-use TheSchwartz;
+use TheSchwartz::Custom;
 use Time::Piece;
 use UNIVERSAL::require;
 use Time::HiRes qw( time );
@@ -19,7 +19,7 @@ sub new {
     } else {
         croak 'not specified database information in config file for worker manager';
     }
-    my $client = TheSchwartz->new( databases => $databases, %$options);
+    my $client = TheSchwartz::Custom->new( databases => $databases, %$options);
 
     my $self = bless {
         client => $client,
