@@ -108,15 +108,17 @@ sub report {
         push @data, \%dat;
     }
 
-    my $num = scalar(@data);
-    my $width = 80-17-$num;
-    printf("Workers: %d total %${width}s\n\n", $num, scalar localtime);
-    printf("% 5s % 20s % 2s % 7s % 41s\n", 'PID', 'FUNC', 'S', 'TIME', 'ARGS');
+    my $now = scalar localtime;
+    my $num_workers = scalar(@data);
+    my $width = 120-19-length($now);
+    printf("Workers: %3d total %${width}s\n\n", $num_workers, $now);
+    printf("%-5s %-13s %-61s %-2s %-7s %-41s\n", 'PID', 'JOBID', 'FUNC', 'S', 'TIME', 'ARGS');
     foreach my $d (sort { order_by($sort, $a, $b) } @data) {
         my $func_str = fmt_func($d, $func_col);
 
-        printf("% 5s % 20s % 2s % 7s % 41s\n",
+        printf("%-5s %-13s %-61s %-2s %-7s %-41s\n",
                $d->{pid},
+               $d->{jobid},
                $func_str,
                ($d->{done} ? 'S' : 'R'),
                fmt_time($d),
@@ -150,7 +152,7 @@ sub fmt_func {
         }
     }
 
-    return substr($val, 0, 20),
+    return substr($val, 0, 100),
 }
 
 sub fmt_time {
