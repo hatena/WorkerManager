@@ -31,7 +31,7 @@ sub new {
 BEGIN {
     $LOGGER = sub {
         my ($class, $msg) = @_;
-        print localtime->datetime, " $class $msg\n";
+        print localtime->datetime, " $class\[$$\]: $msg\n";
     };
 }
 
@@ -46,14 +46,14 @@ sub open_logs {
             my ($class, $msg) = @_;
             $msg =~ s/\s+$//;
             $fh ||= IO::File->new(">>" . $self->{log_file});
-            $fh->print(localtime->datetime. " $class $msg\n");
+            $fh->print(localtime->datetime. " $class\[$$\]: $msg\n");
         };
     }
-    
+
     if ($self->{error_log_file}) {
 #        close STDOUT;
 #        close STDERR;
-        
+
         open(STDOUT, ">>" . $self->{error_log_file})
             or die "Failed to re-open STDOUT to ". $self->{error_log_file};
         open STDERR, ">>&STDOUT"     or die "Can't dup STDOUT: $!";
@@ -77,7 +77,7 @@ sub init {
 
     $self->{pm}->run_on_finish(
         sub { my ($pid, $exit_code, $ident) = @_;
-              $LOGGER->('WorkerManager', "$ident exited with PID $pid and exit code: $exit_code");
+              $LOGGER->('WorkerManager', "Child $ident exited with PID $pid and exit code: $exit_code");
               delete $self->{pids}->{$pid};
           }
     );
@@ -89,6 +89,15 @@ sub init {
               #print join(',', map {"$_($self->{pids}->{$_})"} keys %{$self->{pids}});
               #print "\n";
           }
+    );
+    $self->{pm}->run_on_wait(
+        sub {
+            if ($self->{terminating}) {
+                $self->{pm}->run_on_wait(undef, undef);
+                die 'TERMINATING';
+            }
+        },
+        1
     );
 
     $self->{count} = 0;
@@ -102,102 +111,100 @@ sub set_signal_handlers {
     my $self = shift;
 
     setpgrp;
-    my $terminate_handle = sub {
+    $SIG{QUIT} = $SIG{TERM} = sub {
         my $sig = shift;
-        warn "=== killed by $sig. ($$)";
-
+        $LOGGER->('WorkerManager', "Received $sig. trying to terminate children gracefully");
         $self->{terminating} = 1;
-        unless ($self->{pm}->{in_child}) {
-            $self->terminate_all_children;
+        $self->{client}->terminate if $self->{client};
+    };
+
+    $SIG{INT} = sub {
+        my $sig = shift;
+
+        unless ($self->{terminating}) {
+            $LOGGER->('WorkerManager', "Received $sig. trying to terminate children gracefully");
+            $self->{terminating} = 1;
+            $self->{client}->terminate if $self->{client};
+        } else {
+            $LOGGER->('WorkerManager', "Received $sig. killing all children");
+            $self->killall_children unless $self->{pm}->{in_child};
         }
     };
 
-
-    $SIG{QUIT} = $terminate_handle;
-    $SIG{TERM} = $terminate_handle;
-
-    my $interrupt_handle = sub {
-        my $sig = shift;
-#        warn "=== killed by $sig. ($$)";
-
-        $self->{terminating} = 1;
-        unless ($self->{pm}->{in_child}) {
-            $self->killall_children;
-        }
-        exit(1);
-    };
-
-    $SIG{INT} = $interrupt_handle;
-
-    my $reopen_log_handle = sub {
+    $SIG{HUP} = sub {
         my $sig = shift;
         $self->open_logs;
+        $self->signal_all_children('HUP');
     };
-    $SIG{HUP} = $reopen_log_handle;
 }
 
 sub set_signal_handlers_for_child {
     my $self = shift;
 
     setpgrp;
-    my $terminate_handle = sub {
+    $SIG{QUIT} = $SIG{TERM} = sub {
         my $sig = shift;
-        $self->{terminating} = 1;
-        $self->{client}->terminate if $self->{client};
+        $LOGGER->('WorkerManager', "Child received $sig");
+        $self->{client}->terminate;
     };
 
-    $SIG{QUIT} = $terminate_handle;
-    $SIG{TERM} = $terminate_handle;
-
-    my $interrupt_handle = sub {
+    $SIG{INT} = sub {
         my $sig = shift;
-        warn "killed by $sig. ($$)";
-        $self->{terminating} = 1;
-        $self->{client}->terminate if $self->{client};
-        exit 0;
+        $LOGGER->('WorkerManager', "Child received $sig");
+        $self->{pm}->finish;
     };
-    $SIG{INT} = $interrupt_handle;
 
-    my $reopen_log_handle = sub {
+    $SIG{HUP} = sub {
         my $sig = shift;
         $self->open_logs;
     };
-    $SIG{HUP} = $reopen_log_handle;
+}
+
+sub signal_all_children {
+    my $self = shift;
+    my $sig = shift;
+    return unless scalar(keys %{$self->{pids}});
+    $LOGGER->('WorkerManager', "sending $sig to children: " . join(',', keys %{$self->{pids}}));
+    kill $sig, $_ for keys %{$self->{pids}};
 }
 
 sub terminate_all_children {
     my $self = shift;
-    warn "terminating. children: " . join(",", keys %{$self->{pids}});
-    kill "TERM", $_ for keys %{$self->{pids}};
+    $self->signal_all_children('TERM');
 }
 
 sub killall_children {
     my $self = shift;
-    warn "killing. children: " . join(",", keys %{$self->{pids}});
-    kill "INT", $_ for keys %{$self->{pids}};
+    $self->signal_all_children('INT');
 }
 
 sub reopen_children {
     my $self = shift;
-    $self->terminate_all_children;
+    $self->signal_all_children('TERM');
 }
 
 sub main {
     my $self = shift;
-    while (!$self->{terminating}) {
-        my $pid = $self->{pm}->start(++$self->{count}) and next;
-        $self->set_signal_handlers_for_child;
-        $0 .= " [child process $self->{count}]";
-        my $worker_client_class = "WorkerManager::" . $self->{type};
-        $self->{client} = $worker_client_class->new($self->{worker}, $self->{worker_options}) or die;
-        $self->{client}->work($self->{works_per_child});
-        $self->{pm}->finish;
+    eval {
+        # startループから抜けるためのeval
+        while (!$self->{terminating}) {
+            my $pid = $self->{pm}->start(++$self->{count}) and next;
+            last unless $self->{pm}->{in_child};
+            $self->set_signal_handlers_for_child;
+            $0 .= " [child process $self->{count}]";
+            my $worker_client_class = "WorkerManager::" . $self->{type};
+            $self->{client} = $worker_client_class->new($self->{worker}, $self->{worker_options}) or die;
+            $self->{client}->work($self->{works_per_child});
+            $self->{pm}->finish;
+        }
+    };
+    if ($@) {
+        die $@ if $self->{pm}->{in_child};
     }
     $self->terminate_all_children;
     local $SIG{ALRM} = sub {
         $LOGGER->('WorkerManager', "Timeout to terminate children");
         $self->killall_children;
-        exit 1;
     };
     alarm($self->{wait_terminating} || 10);
     $self->{pm}->wait_all_children;
@@ -206,3 +213,4 @@ sub main {
 }
 
 1;
+
