@@ -1,5 +1,5 @@
 CONCURRENCY=4
 WORKS_PER_CHILD=100
-ROOT=/home/httpd/apps/Hatena-xxx/releases
+ROOT=/home/workermanager/
 PROG=script/workermanager.pl
 CONF=config/worker.conf.yml
