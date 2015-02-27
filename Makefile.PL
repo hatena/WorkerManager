@@ -3,14 +3,21 @@ use inc::Module::Install;
 name 'WorkerManager';
 version 0.0001;
 
+requires 'Class::Accessor::Fast';
+requires 'Class::Data::Inheritable';
+requires 'DBI';
 requires 'Danga::Socket';
 requires 'File::Pid';
+requires 'Gearman::Task';
+requires 'Gearman::Worker';
 requires 'Parallel::ForkManager';
 requires 'Proc::Daemon';
 requires 'TheSchwartz';
 requires 'TheSchwartz::Simple';
+requires 'TheSchwartz::Worker';
+requires 'Time::HiRes';
+requires 'Time::Piece';
 requires 'UNIVERSAL::require';
-recommends 'Gearman::Client';
-recommends 'Gearman::Client::Async';
+requires 'YAML::Syck';
 
 WriteAll;
