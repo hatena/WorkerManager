@@ -228,7 +228,10 @@ WorkerManager - It's new module
 
 =head1 LICENSE
 
-(TBD)
+Copyright (C) stanaka.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =head1 AUTHOR
 
