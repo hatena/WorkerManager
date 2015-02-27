@@ -1,9 +1,0 @@
-Danga::Socket
-File::Pid
-Gearman::Client
-Gearman::Client::Async
-Parallel::ForkManager
-Proc::Daemon
-TheSchwartz
-TheSchwartz::Simple
-UNIVERSAL::require
