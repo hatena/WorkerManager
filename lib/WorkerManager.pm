@@ -10,6 +10,8 @@ use IO::Handle;
 use IO::File;
 our $LOGGER;
 
+our $VERSION = '0.001';
+
 sub new {
     my $class = shift;
     my %args = @_;
@@ -207,3 +209,30 @@ sub main {
 }
 
 1;
+
+__END__
+
+=encoding utf-8
+
+=head1 NAME
+
+WorkerManager - It's new module
+
+=head1 SYNOPSIS
+
+    use WorkerManager;
+
+=head1 DESCRIPTION
+
+...
+
+=head1 LICENSE
+
+(TBD)
+
+=head1 AUTHOR
+
+stanaka
+
+=cut
+
