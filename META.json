@@ -1,7 +1,7 @@
 {
    "abstract" : "A framework for dealing with workers of TheSchwartz",
    "author" : [
-      "stanaka"
+      "aereal <aereal@aereal.org>"
    ],
    "dynamic_config" : 0,
    "generated_by" : "Minilla/v2.3.0, CPAN::Meta::Converter version 2.142690",
@@ -88,7 +88,6 @@
       "shiba_yu36 <shibayu36@gmail.com>",
       "motemen <motemen@gmail.com>",
       "motemen <motemen@hatena.ne.jp>",
-      "hagihala <hagihala@hatena.ne.jp>",
-      "aereal <aereal@aereal.org>"
+      "hagihala <hagihala@hatena.ne.jp>"
    ]
 }

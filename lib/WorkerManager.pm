@@ -228,14 +228,16 @@ WorkerManager - A framework for dealing with workers of TheSchwartz
 
 =head1 LICENSE
 
-Copyright (C) stanaka.
+Copyright (C) aereal.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =head1 AUTHOR
 
-stanaka
+aereal E<lt>aereal@aereal.orgE<gt>
+
+Original implementation written by stanaka.
 
 =cut
 
