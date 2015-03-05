@@ -41,14 +41,16 @@
          }
       },
       "runtime" : {
+         "recommends" : {
+            "Gearman::Task" : "0",
+            "Gearman::Worker" : "0"
+         },
          "requires" : {
             "Class::Accessor::Fast" : "0",
             "Class::Data::Inheritable" : "0",
             "DBI" : "0",
             "Danga::Socket" : "0",
             "File::Pid" : "0",
-            "Gearman::Task" : "0",
-            "Gearman::Worker" : "0",
             "Parallel::ForkManager" : "0",
             "Proc::Daemon" : "0",
             "TheSchwartz" : "0",
