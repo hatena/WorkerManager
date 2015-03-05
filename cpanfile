@@ -3,8 +3,6 @@ requires 'Class::Data::Inheritable';
 requires 'DBI';
 requires 'Danga::Socket';
 requires 'File::Pid';
-requires 'Gearman::Task';
-requires 'Gearman::Worker';
 requires 'Parallel::ForkManager';
 requires 'Proc::Daemon';
 requires 'TheSchwartz';
@@ -14,3 +12,6 @@ requires 'Time::HiRes';
 requires 'Time::Piece';
 requires 'UNIVERSAL::require';
 requires 'YAML::Syck';
+
+recommends 'Gearman::Task';
+recommends 'Gearman::Worker';
