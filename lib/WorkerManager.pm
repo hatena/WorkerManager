@@ -216,7 +216,7 @@ __END__
 
 =head1 NAME
 
-WorkerManager - It's new module
+WorkerManager - A framework for dealing with workers of TheSchwartz
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 # NAME
 
-WorkerManager - It's new module
+WorkerManager - A framework for dealing with workers of TheSchwartz
 
 # SYNOPSIS
 
