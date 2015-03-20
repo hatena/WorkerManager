@@ -76,6 +76,7 @@
       }
    },
    "version" : "0.001",
+   "x_authority" : "cpan:HATENA",
    "x_contributors" : [
       "marqs <marqs@hatena.ne.jp>",
       "hideoki <hideoki@hatena.ne.jp>",
