@@ -2,6 +2,10 @@ Revision history for Perl extension WorkerManager
 
 {{$NEXT}}
 
+0.002 2015-12-25T02:38:14Z
+
+    - #3 autoflush STDOUT, STDERR even if outputs are not files
+
 0.001 2015-03-31T02:55:30Z
 
     - original version

@@ -4,7 +4,7 @@
       "aereal <aereal@aereal.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v2.3.0, CPAN::Meta::Converter version 2.142690",
+   "generated_by" : "Minilla/v2.3.0, CPAN::Meta::Converter version 2.150005",
    "license" : [
       "perl_5"
    ],
@@ -75,7 +75,7 @@
          "web" : "https://github.com/hatena/WorkerManager"
       }
    },
-   "version" : "0.001",
+   "version" : "0.002",
    "x_authority" : "cpan:HATENA",
    "x_contributors" : [
       "marqs <marqs@hatena.ne.jp>",
@@ -89,6 +89,7 @@
       "shiba_yu36 <shibayu36@gmail.com>",
       "motemen <motemen@hatena.ne.jp>",
       "hagihala <hagihala@hatena.ne.jp>",
-      "Hiroshi SHIBAMURA <motemen@gmail.com>"
-   ]
+      "motemen <motemen@gmail.com>"
+   ],
+   "x_serialization_backend" : "JSON::PP version 2.27203"
 }
