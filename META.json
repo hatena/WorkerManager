@@ -75,13 +75,12 @@
          "web" : "https://github.com/hatena/WorkerManager"
       }
    },
-   "version" : "0.002",
+   "version" : "0.003",
    "x_authority" : "cpan:HATENA",
    "x_contributors" : [
       "marqs <marqs@hatena.ne.jp>",
       "hideoki <hideoki@hatena.ne.jp>",
       "onishi <onishi@hatena.ne.jp>",
-      "nanto_vi <nanto@moon.email.ne.jp>",
       "Shinji Tanaka <stanaka@hatena.ne.jp>",
       "wakabatan <wakabatan@localhost.localdomain>",
       "mechairoi <ttsujikawa@gmail.com>",
@@ -89,7 +88,9 @@
       "shiba_yu36 <shibayu36@gmail.com>",
       "motemen <motemen@hatena.ne.jp>",
       "hagihala <hagihala@hatena.ne.jp>",
-      "motemen <motemen@gmail.com>"
+      "motemen <motemen@gmail.com>",
+      "aereal <aereal@users.noreply.github.com>",
+      "nanto_vi, TOYAMA Nao <nanto@moon.email.ne.jp>"
    ],
    "x_serialization_backend" : "JSON::PP version 2.27203"
 }
