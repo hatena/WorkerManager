@@ -13,13 +13,14 @@ sub new {
     my $dsn = $args->{dsn} || $args->{dns} || croak 'not specified dsn for worker manager';
     my $user = $args->{user} || 'nobody';
     my $pass = $args->{pass} || 'nobody';
+    my $opts = $args->{opts} || {};
 
     my $client;
     if ($ENV{DISABLE_WORKER}) {
         TheSchwartz->require;
         TheSchwartz::Job->require;
     } else {
-        my $dbh = DBI->connect($dsn, $user, $pass, {RaiseError => 1});
+        my $dbh = DBI->connect($dsn, $user, $pass, {RaiseError => 1, %$opts});
         $client = TheSchwartz::Simple->new([$dbh]);
     }
     bless { client => $client }, $class;
