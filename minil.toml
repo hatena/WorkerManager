@@ -1,3 +1,5 @@
 name = "WorkerManager"
 # badges = ["travis"]
 authority = "cpan:HATENA"
+
+module_maker="ModuleBuildTiny"
