@@ -4,16 +4,17 @@ use warnings;
 use Carp qw(croak);
 use Module::Load ();
 use Gearman::Task;
-use base qw(
-    Class::Data::Inheritable
-);
-
-__PACKAGE__->mk_classdata('client_class');
 
 use Class::Accessor::Lite (
     rw => [qw(
         client
     )],
+);
+
+use Class::Data::Lite (
+    rw => {
+        client_class => undef,
+    }
 );
 
 sub new {

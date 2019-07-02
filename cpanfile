@@ -1,5 +1,5 @@
 requires 'Class::Accessor::Lite';
-requires 'Class::Data::Inheritable';
+requires 'Class::Data::Lite';
 requires 'DBI';
 requires 'Danga::Socket';
 requires 'File::Pid';
