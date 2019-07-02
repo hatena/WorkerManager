@@ -2,7 +2,7 @@ package WorkerManager::Client::Gearman;
 use strict;
 use warnings;
 use Carp qw(croak);
-use UNIVERSAL::require;
+use Module::Load ();
 use Gearman::Task;
 use base qw(
     Class::Accessor::Fast
@@ -15,7 +15,7 @@ __PACKAGE__->mk_classdata('client_class');
 sub new {
     my ($class, $args) = @_;
     $args->{job_servers} ||= [qw(127.0.0.1)];
-    $class->client_class->use;
+    Module::Load::load($class->client_class);
     my $client = $class->client_class->new(job_servers => $args->{job_servers});
     my $self = $class->SUPER::new($args);
     $self->client($client);

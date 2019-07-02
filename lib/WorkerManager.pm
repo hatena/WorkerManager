@@ -4,7 +4,7 @@ use warnings;
 
 use Carp;
 use Parallel::ForkManager;
-use UNIVERSAL::require;
+use Module::Load ();
 use Time::Piece;
 use IO::Handle;
 use IO::File;
@@ -73,7 +73,7 @@ sub init {
     }
 
     my $worker_client_class = "WorkerManager::" . $self->{type};
-    $worker_client_class->use or die $@;
+    Module::Load::load($worker_client_class);
     $self->{client} = $worker_client_class->new($self->{worker}, $self->{worker_options}) or die;
 
     $self->{pm} = Parallel::ForkManager->new($self->{max_processes})
