@@ -4,7 +4,7 @@
       "aereal <aereal@aereal.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v2.3.0, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "Minilla/v3.1.4, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -28,7 +28,7 @@
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "Module::Build" : "0.38"
+            "Module::Build::Tiny" : "0.035"
          }
       },
       "develop" : {
@@ -78,19 +78,21 @@
    "version" : "0.003",
    "x_authority" : "cpan:HATENA",
    "x_contributors" : [
-      "marqs <marqs@hatena.ne.jp>",
-      "hideoki <hideoki@hatena.ne.jp>",
-      "onishi <onishi@hatena.ne.jp>",
-      "Shinji Tanaka <stanaka@hatena.ne.jp>",
-      "wakabatan <wakabatan@localhost.localdomain>",
-      "mechairoi <ttsujikawa@gmail.com>",
       "Kentaro Kuribayashi <kentarok@gmail.com>",
-      "shiba_yu36 <shibayu36@gmail.com>",
-      "motemen <motemen@hatena.ne.jp>",
-      "hagihala <hagihala@hatena.ne.jp>",
-      "motemen <motemen@gmail.com>",
+      "Shinji Tanaka <stanaka@hatena.ne.jp>",
+      "Takumi Akiyama <t.akiym@gmail.com>",
       "aereal <aereal@users.noreply.github.com>",
-      "nanto_vi, TOYAMA Nao <nanto@moon.email.ne.jp>"
+      "hagihala <hagihala@hatena.ne.jp>",
+      "hideoki <hideoki@hatena.ne.jp>",
+      "marqs <marqs@hatena.ne.jp>",
+      "mechairoi <ttsujikawa@gmail.com>",
+      "motemen <motemen@gmail.com>",
+      "motemen <motemen@hatena.ne.jp>",
+      "nanto_vi, TOYAMA Nao <nanto@moon.email.ne.jp>",
+      "onishi <onishi@hatena.ne.jp>",
+      "shiba_yu36 <shibayu36@gmail.com>",
+      "wakabatan <wakabatan@localhost.localdomain>"
    ],
-   "x_serialization_backend" : "JSON::PP version 2.27203"
+   "x_serialization_backend" : "JSON::PP version 2.27400_02",
+   "x_static_install" : 1
 }
