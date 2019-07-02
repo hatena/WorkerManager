@@ -1,4 +1,4 @@
-requires 'Class::Accessor::Fast';
+requires 'Class::Accessor::Lite';
 requires 'Class::Data::Inheritable';
 requires 'DBI';
 requires 'Danga::Socket';

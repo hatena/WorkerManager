@@ -5,12 +5,16 @@ use Carp qw(croak);
 use Module::Load ();
 use Gearman::Task;
 use base qw(
-    Class::Accessor::Fast
     Class::Data::Inheritable
 );
 
-__PACKAGE__->mk_accessors(qw(client));
 __PACKAGE__->mk_classdata('client_class');
+
+use Class::Accessor::Lite (
+    rw => [qw(
+        client
+    )],
+);
 
 sub new {
     my ($class, $args) = @_;
