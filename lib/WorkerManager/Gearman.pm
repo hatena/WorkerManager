@@ -1,16 +1,17 @@
 package WorkerManager::Gearman;
 use strict;
 use warnings;
-use UNIVERSAL::require;
+use Module::Load ();
 use Gearman::Worker;
-use base qw(Class::Accessor::Fast);
 
-__PACKAGE__->mk_accessors(qw(
-    job_servers
-    prefix
-    worker_classes
-    workers
-));
+use Class::Accessor::Lite (
+    rw => [qw(
+        job_servers
+        prefix
+        worker_classes
+        workers
+    )],
+);
 
 sub new {
     my ($class, $worker_classes, $options) = @_;
@@ -39,7 +40,7 @@ sub new {
 sub init {
     my $self = shift;
     for my $worker_class (@{$self->worker_classes}) {
-        $worker_class->use or warn $@;
+        Module::Load::load($worker_class);
         push @{$self->workers}, $worker_class->new({
             job_servers => $self->job_servers,
             prefix      => $self->prefix,

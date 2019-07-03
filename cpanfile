@@ -1,8 +1,9 @@
-requires 'Class::Accessor::Fast';
-requires 'Class::Data::Inheritable';
+requires 'Class::Accessor::Lite';
+requires 'Class::Data::Lite';
 requires 'DBI';
 requires 'Danga::Socket';
 requires 'File::Pid';
+requires 'Module::Load';
 requires 'Parallel::ForkManager';
 requires 'Proc::Daemon';
 requires 'TheSchwartz';
@@ -10,7 +11,6 @@ requires 'TheSchwartz::Simple';
 requires 'TheSchwartz::Worker';
 requires 'Time::HiRes';
 requires 'Time::Piece';
-requires 'UNIVERSAL::require';
 requires 'YAML::Syck';
 
 recommends 'Gearman::Task';
