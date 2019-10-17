@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         perl-version:
-          - '5.8'
+          - '5.10'
           - latest
     container:
       image: perl:${{ matrix.perl-version }}
