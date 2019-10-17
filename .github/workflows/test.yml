@@ -22,3 +22,5 @@ jobs:
         run: perl -V
       - name: Install minilla
         run: cpanm -n Minilla
+      - name: minil test
+        run: minil test
