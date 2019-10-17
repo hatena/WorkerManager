@@ -112,7 +112,7 @@ sub set_signal_handlers {
 
         $self->{terminating} = 1;
         $self->{client}->terminate if $self->{client};
-        unless ($self->{pm}->{in_child}) {
+        unless ($self->{pm}->is_child) {
             $self->terminate_all_children;
         }
     };
@@ -127,7 +127,7 @@ sub set_signal_handlers {
 
         $self->{terminating} = 1;
         $self->{client}->terminate if $self->{client};
-        unless ($self->{pm}->{in_child}) {
+        unless ($self->{pm}->is_child) {
             $self->killall_children;
         }
         exit(1);
