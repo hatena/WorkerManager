@@ -20,5 +20,7 @@ jobs:
         run: perl -V
       - name: Install minilla
         run: cpanm -n Minilla
+      - name: inspect install
+        run: cpanm -v Proc::Daemon
       - name: minil test
         run: minil test
