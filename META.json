@@ -46,7 +46,6 @@
             "File::Pid" : "0",
             "Module::Load" : "0",
             "Parallel::ForkManager" : "2.02",
-            "Proc::Daemon" : "0",
             "TheSchwartz" : "0",
             "TheSchwartz::Simple" : "0",
             "Time::HiRes" : "0",
@@ -86,6 +85,6 @@
       "shiba_yu36 <shibayu36@gmail.com>",
       "wakabatan <wakabatan@localhost.localdomain>"
    ],
-   "x_serialization_backend" : "JSON::PP version 4.04",
+   "x_serialization_backend" : "JSON::PP version 4.02",
    "x_static_install" : 1
 }
