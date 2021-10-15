@@ -15,7 +15,7 @@ sub new {
 
     my $databases;
     if ($databases = delete $options->{databases}) {
-        $databases = [$databases] unless UNIVERSAL::isa($databases, 'ARRAY');
+        $databases = [$databases] unless ref($databases) eq 'ARRAY';
     } else {
         croak 'not specified database information in config file for worker manager';
     }
@@ -57,7 +57,7 @@ sub init {
         );
     }
 
-    if (UNIVERSAL::isa($self->{worker}, 'ARRAY')){
+    if (ref($self->{worker}) eq 'ARRAY') {
         for (@{$self->{worker}}){
             Module::Load::load($_);
             $_->can('work') or die "cannot ${_}->work";
