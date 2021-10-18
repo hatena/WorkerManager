@@ -66,7 +66,7 @@
          "web" : "https://github.com/hatena/WorkerManager"
       }
    },
-   "version" : "0.1001",
+   "version" : "0.1002",
    "x_authority" : "cpan:HATENA",
    "x_contributors" : [
       "Asato Wakisaka <asato.wakisaka@gmail.com>",
@@ -81,7 +81,7 @@
       "mechairoi <ttsujikawa@gmail.com>",
       "motemen <motemen@gmail.com>",
       "motemen <motemen@hatena.ne.jp>",
-      "nanto_vi, TOYAMA Nao <nanto@moon.email.ne.jp>",
+      "nanto_vi <nanto@moon.email.ne.jp>",
       "onishi <onishi@hatena.ne.jp>",
       "shiba_yu36 <shibayu36@gmail.com>",
       "wakabatan <wakabatan@localhost.localdomain>"

@@ -2,6 +2,8 @@ Revision history for Perl extension WorkerManager
 
 {{$NEXT}}
 
+0.1002 2021-10-18T09:33:08Z
+
     - Allow user to customize verbose option of TheSchwartz
     - Stop using UNIVERSAL::isa
     - Remove Proc::Daemon from deps (thanks @astj)
