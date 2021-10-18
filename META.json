@@ -4,7 +4,7 @@
       "aereal <aereal@aereal.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.7, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.1.12, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -69,6 +69,7 @@
    "version" : "0.1001",
    "x_authority" : "cpan:HATENA",
    "x_contributors" : [
+      "Asato Wakisaka <asato.wakisaka@gmail.com>",
       "Kentaro Kuribayashi <kentarok@gmail.com>",
       "Shinji Tanaka <stanaka@hatena.ne.jp>",
       "Takumi Akiyama <t.akiym@gmail.com>",
@@ -85,6 +86,6 @@
       "shiba_yu36 <shibayu36@gmail.com>",
       "wakabatan <wakabatan@localhost.localdomain>"
    ],
-   "x_serialization_backend" : "JSON::PP version 4.02",
+   "x_serialization_backend" : "JSON::PP version 2.97001",
    "x_static_install" : 1
 }
