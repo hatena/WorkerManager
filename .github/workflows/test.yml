@@ -21,5 +21,7 @@ jobs:
         run: perl -V
       - name: Install minilla
         run: cpanm -n Minilla
+      - name: Mark workspace as safe for git
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: minil test
         run: minil test
